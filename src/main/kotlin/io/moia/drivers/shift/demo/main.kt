@@ -1,17 +1,12 @@
 package io.moia.drivers.shift.demo
 
-import java.io.*
-import com.fasterxml.jackson.module.kotlin.*
+import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.RequestHandler
 
-data class HandlerInput(val who: String)
-data class HandlerOutput(val greet: String)
+data class HandlerOutput(val body: String, val headers: Map<String,String>, val statusCode: Int)
 
-class Main {
-    val mapper = jacksonObjectMapper()
-
-    fun handler(input: InputStream, output: OutputStream) : Unit {
-        val inputObj = mapper.readValue<HandlerInput>(input)
-        mapper.writeValue(output,HandlerOutput("hello ${inputObj.who}"))
+class Main: RequestHandler<Map<String,Any>,Any> {
+    override fun handleRequest(input: Map<String,Any>, context: Context?): Any {
+       return HandlerOutput("hello ${(input["queryStringParameters"]as Map<String,Any>)["who"]}", mapOf(),200)
     }
-
 }
